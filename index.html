@@ -1,0 +1,70 @@
+<html>
+  <head>
+    <link rel="manifest" href="manifest.json">
+    <script src="https://cdn.auth0.com/js/auth0-spa-js/2.1/auth0-spa-js.production.js"></script>
+    <title>PWA Test</title>
+  </head>
+  <body>
+    <h1>PWA Test</h1>
+    <p>
+      <button id="loginwithredirect">Login with redirect</button>
+    </p>
+    <p>
+      <button id="loginwithpopup">Login with popup</button>
+    </p>
+    <p>
+      <button id="logout">Logout</button>
+    </p>
+    <p id="result"></p>
+    <script>
+      ;(async function(){
+          if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("service_worker.js").then(function(registration) {
+              console.log("ServiceWorker:", registration.scope);
+            }).catch(function(err) {
+              console.error("ServiceWorker:", err);
+            })
+          }
+          
+          const client = await auth0.createAuth0Client({
+            domain: "esd-test-omar.us.auth0.com",
+            clientId: "MwO3XcI5VXVbkv678cLiPTsCcUS8VRv8",
+            authorizationParams: {
+              redirect_uri: "http://localhost:5500/"
+            }
+          })
+
+          const handleLoginWithRedirect = async () => {
+            await client.loginWithRedirect()
+          }
+
+          const handleLoginWithPopup = async() => {
+            await client.loginWithPopup()
+            await displayUseIno()
+          }
+
+          const handleLogout = async () => {
+            await client.logout()
+          }
+
+          const displayUseIno = async () => {
+            const user = await client.getUser()
+            console.log(user)
+            if(user) {
+              const result = `Logged in: ${user.name}`
+              document.querySelector("#result").appendChild(document.createTextNode(result))
+            }
+          }
+
+          window.addEventListener('load', async () => {
+            const redirectResult = await client.handleRedirectCallback()
+            await displayUseIno()
+          })
+
+          document.querySelector("#loginwithredirect").addEventListener("click", handleLoginWithRedirect)
+          document.querySelector("#loginwithpopup").addEventListener("click", handleLoginWithPopup)
+          document.querySelector("#logout").addEventListener("click", handleLogout)
+        })()
+    </script>
+  </body>
+</html>
