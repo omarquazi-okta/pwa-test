@@ -1,6 +1,7 @@
 var cacheName = "pwa-test-cheches"
 var urlsToCache = [
 	"/localhost:5500/",
+  "/omarquazi-okta.github.io/pwa-test/"
 ]
 
 self.addEventListener("install", function(event) {
